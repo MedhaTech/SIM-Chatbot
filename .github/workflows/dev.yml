@@ -1,0 +1,35 @@
+
+
+name: Deploy to DEV server
+
+on:
+  push:
+    branches: development
+jobs:
+
+  Deploy_Development:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to Development
+        if: github.ref == 'refs/heads/development'
+        env:
+          PRIVATE_KEY: ${{ secrets.Chatbot_PRIVATE_KEY }}
+          HOSTNAME: ${{ secrets.Chatbot_HOSTNAME }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 400 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ubuntu@${{ secrets.Chatbot_HOSTNAME }} '
+            cd /var/www/html/SIM-Chatbot &&
+            sudo git fetch origin &&
+            sudo git checkout development &&
+            sudo git pull origin development '
+  
+       
+            
+
+      
+  
